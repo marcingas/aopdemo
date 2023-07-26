@@ -17,6 +17,11 @@ public class AopdemoApplication {
 	public CommandLineRunner commandLineRunner(AccountDAO accountDAO, MembershipDAO membershipDAO){
 		return runner->{
 			demoBeforeAdvice(accountDAO, membershipDAO);
+			accountDAO.setName("account A");
+			accountDAO.setServiceCode("service A");
+
+			String name = accountDAO.getName();
+			String code = accountDAO.getServiceCode();
 
 
 
