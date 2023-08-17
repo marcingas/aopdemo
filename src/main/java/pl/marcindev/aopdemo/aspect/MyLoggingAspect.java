@@ -1,6 +1,7 @@
 package pl.marcindev.aopdemo.aspect;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.annotation.Order;
@@ -13,6 +14,33 @@ import java.util.List;
 @Component
 @Order(2)
 public class MyLoggingAspect {
+    @Around("execution(* pl.marcindev.aopdemo.service.*.getFortune(..))")
+    public Object aroundGetFortune(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        String method = proceedingJoinPoint.getSignature().toShortString();
+        System.out.println("Ececuting around method: " + method);
+        long begin = System.currentTimeMillis();
+
+        Object result = null;
+        try {
+            result = proceedingJoinPoint.proceed();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            result = "No worry, we will handle for You !";
+
+        }
+        long end = System.currentTimeMillis();
+        long duration = end - begin;
+        System.out.println("duration is: " + duration / 1000.0 + " seconds");
+        return result;
+    }
+
+    @After("execution(* pl.marcindev.aopdemo.dao.AccountDAO.findAccounts(..))")
+    public void afterFinallyFindAccountsAdvice(JoinPoint joinPoint) {
+        String method = joinPoint.getSignature().toShortString();
+        System.out.println("===> executing @After on method: " + method);
+
+    }
+
     @AfterThrowing(
             pointcut = "execution(* pl.marcindev.aopdemo.dao.AccountDAO.findAccounts(..))",
             throwing = "exc"
